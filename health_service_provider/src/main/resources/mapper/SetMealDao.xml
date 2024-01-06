@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bigdata.dao.SetMealDao">
+    <select id="selectByCondition" parameterType="string"
+            resultType="com.bigdata.pojo.Setmeal">
+        select * from t_setmeal
+        <if test="value != null and value.length > 0">
+            where code = #{value} or name = #{value} or helpCode = #{value}
+        </if>
+    </select>
+    <select id="findAllGroups"
+            resultType="com.bigdata.pojo.CheckGroup">
+        select * from t_checkgroup
+    </select>
+    <insert id="add" parameterType="com.bigdata.pojo.Setmeal" useGeneratedKeys="true" keyProperty="id">
+        insert into t_setmeal(code,name,helpCode,price,remark,attention,img,sex,age)
+        values(#{code},#{name},#{helpCode},#{price},#{remark},#{attention},#{img},#{sex},#{age})
+    </insert>
+    <insert id="setSetMealAndCheckGroup" parameterType="map">
+        insert into t_setmeal_checkgroup values(#{setmeal_id},#{checkgroup_id})
+    </insert>
+    <select id="findCheckGroupIdsBySetMealId" parameterType="int" resultType="int">
+        select checkgroup_id from t_setmeal_checkgroup where setmeal_id=#{id}
+    </select>
+
+    <update id="edit" parameterType="com.bigdata.pojo.Setmeal">
+        update t_setmeal
+        <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="code != null">
+                code = #{code},
+            </if>
+            <if test="helpCode != null">
+                helpCode = #{helpCode},
+            </if>
+            <if test="attention != null">
+                attention = #{attention},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+            <if test="sex != null">
+                sex = #{sex},
+            </if>
+            <if test="age != null">
+                age = #{age},
+            </if>
+            <if test="img != null">
+                img = #{img},
+            </if>
+
+        </set>
+        where id = #{id}
+    </update>·
+
+    <delete id="deleteAssociation" parameterType="int">
+        delete from t_setmeal_checkgroup where setmeal_id=#{id}
+    </delete>
+
+    <update id="deleteRelation">
+        alter table t_setmeal_checkgroup drop constraint setmeal_key;
+    </update>
+
+    <update id="recoverRelation">
+        alter table t_setmeal_checkgroup add constraint setmeal_key foreign key(setmeal_id) references t_setmeal(id);
+    </update>
+
+    <delete id="deleteSetMealById" parameterType="int">
+        delete from t_setmeal where id = #{id};
+    </delete>
+
+    <select id="findAll" resultType="com.bigdata.pojo.Setmeal">
+        select * from t_setmeal
+    </select>
+
+    <select id="findById" resultType="com.bigdata.pojo.Setmeal">
+        select * from t_setmeal  where id=#{id}
+    </select>
+
+
+</mapper>

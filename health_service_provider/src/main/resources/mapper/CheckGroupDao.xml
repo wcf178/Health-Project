@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bigdata.dao.CheckGroupDao">
+    <select id="selectByCondition" parameterType="string"
+            resultType="com.bigdata.pojo.CheckGroup">
+        select * from t_checkgroup
+        <if test="value != null and value.length > 0">
+            where code = #{value} or name = #{value} or helpCode = #{value}
+        </if>
+    </select>
+    <select id="findAll"
+            resultType="com.bigdata.pojo.CheckItem">
+        select * from t_checkitem
+    </select>
+
+    <insert id="add" parameterType="CheckGroup">
+        insert into t_checkgroup(code,name,helpCode,sex,remark,attention)
+        values
+        (#{code},#{name},#{helpCode},#{sex},#{remark},#{attention})
+    </insert>
+    <insert id="add_m" >
+        insert into t_checkgroup_checkitem(checkgroup_id,checkitem_id)
+        values
+        (#{groupid},#{itemid})
+    </insert>
+
+    <select id="getGroupIdByCode"
+            resultType="int">
+        select id from t_checkgroup where code = #{code};
+    </select>
+
+    <delete id="deleteGroupById" parameterType="int">
+        delete from t_checkgroup where id = #{id};
+    </delete>
+    <delete id="deleteMidById" parameterType="int">
+        delete from t_checkgroup_checkitem where checkgroup_id = #{id};
+    </delete>
+    <update id="deleteRelation">
+        alter table t_checkgroup_checkitem drop constraint group_id;
+    </update>
+    <update id="deleteRelation2">
+        alter table t_setmeal_checkgroup drop constraint checkgroup_key;
+    </update>
+
+    <update id="recoverRelation">
+        alter table t_checkgroup_checkitem add constraint group_id foreign key(checkgroup_id) references t_checkgroup(id);
+    </update>
+    <update id="recoverRelation2">
+        alter table t_setmeal_checkgroup add constraint checkgroup_key foreign key(checkgroup_id) references t_checkgroup(id);
+    </update>
+
+    <select id="getGroupById" parameterType="int"
+            resultType="com.bigdata.pojo.CheckGroup">
+        select * from t_checkgroup where id = #{id}
+    </select>
+    <select id="getIdsById" parameterType="int"
+            resultType="int">
+        select checkitem_id from t_checkgroup_checkitem where checkgroup_id= #{id}
+    </select>
+    <update id="editGroup" parameterType="com.bigdata.pojo.CheckGroup">
+        update t_checkgroup
+        <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="sex != null">
+                sex = #{sex},
+            </if>
+            <if test="code != null">
+                code = #{code},
+            </if>
+            <if test="helpCode != null">
+                helpCode = #{helpCode},
+            </if>
+            <if test="attention != null">
+                attention = #{attention},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--根据套餐id查询检查项信息-->
+    <select id="findCheckGroupById" resultType="com.bigdata.pojo.CheckGroup">
+        select * from t_checkgroup
+        where id
+        in (select checkgroup_id from t_setmeal_checkgroup where setmeal_id=#{id})
+    </select>
+
+
+</mapper>

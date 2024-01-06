@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="../plugins/elementui/index.css">
+    <script src="../js/vue.js"></script>
+    <script src="../js/axios-0.18.0.js"></script>
+    <script src="../plugins/elementui/index.js"></script>
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+</head>
+<body>
+<div id="app" style="text-align: center;height: 100px;line-height: 100px">
+    <el-dropdown @command="handleCommand">
+        <el-button type="primary">
+            省份<i class="el-icon-caret-bottom el-icon--right"></i>
+        </el-button>
+        <el-dropdown-menu slot="dropdown">
+            <template v-for="p in dataList">
+                <el-dropdown-item :command=p>{{p}}</el-dropdown-item>
+            </template>
+        </el-dropdown-menu>
+    </el-dropdown>
+</div>
+</body>
+<script>
+    new Vue({
+        el:'#app',
+        data:{
+            dataList:[],
+        },
+        created(){
+            this.init();
+        },
+        methods:{
+            handleCommand(command) {
+                this.$message("选中了" + command);
+            },
+            init(){
+                axios.post("/redistest/init.do").then((res)=>{
+                    this.dataList = res.data;
+                })
+            },
+        },
+    })
+</script>
+</html>
